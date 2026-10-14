@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyrics Quiz: Subgéneros Líricos</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Pixel & Modern -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,800;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0e14;
+            color: #f3f4f6;
+            touch-action: manipulation;
+        }
+
+        .pixel-font {
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        /* CRT Screen Scanline effect */
+        .scanline-overlay {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism Player Card */
+        .player-glass {
+            background: rgba(18, 22, 36, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Custom Animated equalizer bars */
+        .eq-bar {
+            animation: bounce 0.8s ease-in-out infinite alternate;
+        }
+        .eq-bar:nth-child(1) { animation-delay: 0.1s; }
+        .eq-bar:nth-child(2) { animation-delay: 0.3s; }
+        .eq-bar:nth-child(3) { animation-delay: 0.5s; }
+        .eq-bar:nth-child(4) { animation-delay: 0.2s; }
+
+        @keyframes bounce {
+            0% { height: 15%; }
+            100% { height: 100%; }
+        }
+
+        /* Custom Pixel Button Effect */
+        .pixel-btn {
+            position: relative;
+            transition: all 0.15s ease;
+            box-shadow: 0px 4px 0px 0px rgba(0, 0, 0, 0.4);
+        }
+        .pixel-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Caligram aesthetic styling for specific lyrical preview */
+        .caligram-shape {
+            display: inline-block;
+            line-height: 1.4;
+            letter-spacing: 2px;
+            font-style: italic;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 md:p-4 overflow-x-hidden bg-slate-950">
+
+    <!-- Main Container styled as vertical smartphone screen / 1080x1920 ratio wrapper -->
+    <div class="relative w-full max-w-[430px] h-screen md:h-[880px] md:rounded-[36px] overflow-hidden shadow-2xl flex flex-col justify-between bg-black border-0 md:border-4 border-slate-800">
+        
+        <!-- CRT Overlay FX -->
+        <div class="scanline-overlay absolute inset-0 z-30 opacity-40"></div>
+
+        <!-- Dynamic Blurred Background Art -->
+        <div id="bg-cover" class="absolute inset-0 bg-cover bg-center transition-all duration-700 scale-110 filter blur-xl brightness-50 z-0" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80');"></div>
+
+        <!-- Top Header Navigation Bar -->
+        <div class="relative z-10 pt-6 px-6 pb-2 flex justify-between items-center text-xs tracking-wider uppercase text-slate-300 font-semibold">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-compact-disc text-emerald-400 animate-spin" style="animation-duration: 6s;"></i>
+                <span>LYRICS QUIZ v1.0</span>
+            </div>
+            <!-- Sound Toggle Button -->
+            <button id="sound-toggle-btn" onclick="toggleAudio()" class="w-8 h-8 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center hover:text-emerald-400 transition-colors">
+                <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+            </button>
+        </div>
+
+        <!-- Main Screen Content Area -->
+        <div class="relative z-10 flex-1 flex flex-col justify-between px-5 py-2 overflow-y-auto">
+            
+            <!-- START / WELCOME SCREEN -->
+            <div id="screen-welcome" class="flex-1 flex flex-col justify-between py-6">
+                <div class="text-center mt-6">
+                    <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full border border-emerald-500/30 tracking-widest uppercase">
+                        Subgéneros Líricos
+                    </span>
+                    <h1 class="text-3xl font-black mt-4 text-white tracking-tight leading-tight">
+                        ¿QUÉ VIBRA TIENE ESTA <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">ROLA?</span>
+                    </h1>
+                    <p class="text-xs text-slate-300 mt-2 px-4 leading-relaxed">
+                        Escucha la letra imaginaria y adivina el género literario oculto en el ritmo.
+                    </p>
+                </div>
+
+                <!-- Pixel Art Animated Cassette Cover -->
+                <div class="my-auto py-6 flex justify-center">
+                    <div class="w-52 h-52 rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-emerald-500 p-1 shadow-2xl relative">
+                        <div class="w-full h-full bg-slate-900 rounded-xl p-4 flex flex-col justify-between items-center relative overflow-hidden">
+                            <!-- Retro cassette detail -->
+                            <div class="w-full h-12 bg-slate-800 rounded flex justify-around items-center px-2">
+                                <div class="w-7 h-7 rounded-full bg-slate-900 border-2 border-slate-600 flex items-center justify-center">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                                </div>
+                                <div class="h-2 w-16 bg-slate-700 rounded-full"></div>
+                                <div class="w-7 h-7 rounded-full bg-slate-900 border-2 border-slate-600 flex items-center justify-center">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                                </div>
+                            </div>
+                            <!-- Mini equalizer -->
+                            <div class="flex items-end justify-center space-x-1.5 h-12 w-full my-2">
+                                <div class="w-2 bg-emerald-400 rounded-t eq-bar"></div>
+                                <div class="w-2 bg-cyan-400 rounded-t eq-bar"></div>
+                                <div class="w-2 bg-indigo-400 rounded-t eq-bar"></div>
+                                <div class="w-2 bg-purple-400 rounded-t eq-bar"></div>
+                                <div class="w-2 bg-pink-400 rounded-t eq-bar"></div>
+                            </div>
+                            <span class="pixel-font text-[9px] text-emerald-400 tracking-wider">SIDE A: LÍRICA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="startGame()" class="pixel-btn w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-sm uppercase tracking-wider rounded-2xl flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-play"></i>
+                    <span>INICIAR DESAFÍO</span>
+                </button>
+            </div>
+
+            <!-- GAME PLAY SCREEN -->
+            <div id="screen-game" class="hidden flex-1 flex flex-col justify-between py-2">
+                
+                <!-- Player Header Stats & Progress -->
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center text-xs text-slate-300 font-medium">
+                        <span id="track-number" class="text-emerald-400 font-bold">PISTA 1 DE 5</span>
+                        <div class="flex items-center space-x-1 bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800">
+                            <i class="fa-solid fa-bolt text-yellow-400 text-xs"></i>
+                            <span id="score-display" class="font-bold text-white">0 PTS</span>
+                        </div>
+                    </div>
+                    <!-- Spotify-like Progress Bar -->
+                    <div class="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="bg-gradient-to-r from-emerald-400 to-cyan-400 h-full w-1/5 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Music Player Album / Lyrics Container -->
+                <div class="player-glass rounded-3xl p-5 my-auto my-3 border border-slate-700/50 shadow-2xl relative overflow-hidden">
+                    
+                    <!-- Track Meta Info -->
+                    <div class="flex items-center justify-between border-b border-slate-700/50 pb-3 mb-3">
+                        <div class="flex items-center space-x-3">
+                            <div id="album-thumb" class="w-10 h-10 rounded-lg bg-cover bg-center shadow" style="background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=200&q=80');"></div>
+                            <div>
+                                <h3 id="song-title" class="text-sm font-bold text-white line-clamp-1">Track Title</h3>
+                                <p id="song-artist" class="text-[11px] text-slate-400">Artista Desconocido</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-heart text-emerald-400 text-sm"></i>
+                    </div>
+
+                    <!-- Lyrics Box Display -->
+                    <div class="py-2 min-h-[140px] flex items-center justify-center">
+                        <p id="lyrics-text" class="text-base font-semibold text-center italic text-emerald-100 leading-relaxed px-2">
+                            "Cargando letra del track..."
+                        </p>
+                    </div>
+
+                    <!-- Fake Playback Timeline controls -->
+                    <div class="pt-3 border-t border-slate-700/30 flex items-center justify-between text-slate-400 text-xs">
+                        <span>0:42</span>
+                        <div class="flex items-center space-x-4 text-base">
+                            <i class="fa-solid fa-backward-step text-slate-500"></i>
+                            <div class="w-8 h-8 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold text-xs">
+                                <i class="fa-solid fa-pause"></i>
+                            </div>
+                            <i class="fa-solid fa-forward-step text-slate-500"></i>
+                        </div>
+                        <span>2:15</span>
+                    </div>
+
+                </div>
+
+                <!-- Question Prompt & Options -->
+                <div class="space-y-2">
+                    <p class="text-xs text-center text-slate-300 font-semibold tracking-wide">
+                        ¿A qué subgénero lírico corresponde esta letra?
+                    </p>
+
+                    <!-- 3 Options Buttons -->
+                    <div id="options-container" class="space-y-2">
+                        <!-- Dynamic Buttons inserted by JS -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- END / RESULTS SCREEN -->
+            <div id="screen-end" class="hidden flex-1 flex flex-col justify-between py-6 text-center">
+                <div class="mt-4">
+                    <span class="px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs font-bold rounded-full border border-yellow-500/30 tracking-widest uppercase">
+                        Sesión Finalizada
+                    </span>
+                    <h2 class="text-2xl font-extrabold text-white mt-3">¡RECAP DE TU PLAYLIST!</h2>
+                </div>
+
+                <div class="player-glass p-6 rounded-3xl my-auto space-y-4 border border-slate-700/60">
+                    <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-yellow-400 to-amber-600 flex items-center justify-center text-slate-950 text-3xl font-black shadow-lg">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase tracking-widest">Puntaje Final</p>
+                        <p id="final-score" class="text-4xl font-black text-emerald-400 my-1">0 / 500</p>
+                    </div>
+
+                    <div class="bg-slate-900/90 rounded-2xl p-3 border border-slate-800">
+                        <p class="text-[11px] text-slate-400 uppercase">Rango Obtenido</p>
+                        <p id="player-rank" class="text-sm font-bold text-yellow-400 mt-0.5">Productor Lírico</p>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <button onclick="startGame()" class="pixel-btn w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> Jugar de Nuevo
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Dynamic Feedback Modal / Toast overlay -->
+        <div id="feedback-modal" class="hidden absolute inset-0 z-40 bg-slate-950/90 backdrop-blur-md p-6 flex flex-col justify-center items-center text-center transition-all duration-300">
+            <div id="modal-icon-bg" class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-xl">
+                <i id="modal-icon" class="fa-solid fa-check"></i>
+            </div>
+            
+            <h3 id="modal-title" class="text-xl font-black text-white mb-2">¡Atinaste al Beat!</h3>
+            <p id="modal-subtitle" class="text-xs text-emerald-400 font-bold uppercase tracking-wider mb-3">Subgénero: Elegía</p>
+            
+            <div class="bg-slate-900/80 rounded-2xl p-4 border border-slate-800 mb-6 max-w-xs">
+                <p id="modal-explanation" class="text-xs text-slate-200 leading-relaxed">
+                    La elegía transforma el dolor y la pérdida en puro arte sonoro.
+                </p>
+            </div>
+
+            <button onclick="nextQuestion()" class="pixel-btn px-8 py-3 bg-white hover:bg-slate-200 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl">
+                Continuar <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Data Questions Bank for Lyrical Subgenres
+        const quizData = [
+            {
+                songTitle: "Cuerdas Vacías",
+                artist: "MC Lágrima",
+                albumCover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Lloran las cuerdas por tu partida,<br>la cancha está vacía y mi alma hundida.”",
+                options: ["Elegía", "Oda", "Epigrama"],
+                correct: "Elegía",
+                hintCorrect: "¡Atinaste! La elegía expresa dolor profundo, luto o la pérdida trágica de algo o alguien amado.",
+                hintWrong: "Esta rola vibra más como Elegía: su esencia es lamentar una pérdida o despedida con melancolía."
+            },
+            {
+                songTitle: "Gotas de Instante",
+                artist: "Zen Flow",
+                albumCover: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Un rayo de sol<br>sobre el agua congelada<br>cae la tarde.”",
+                options: ["Haiku", "Soneto", "Égloga"],
+                correct: "Haiku",
+                hintCorrect: "¡Al punto! El haiku captura un instante fugaz de la naturaleza en muy pocas palabras.",
+                hintWrong: "Es un Haiku: busca congelar un momento breve de la naturaleza de forma contemplativa."
+            },
+            {
+                songTitle: "Crown Diss Track",
+                artist: "Rima Afilada",
+                albumCover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Tanto alardeas de tu corona brillante,<br>pero tu rima es hueca y principiante.”",
+                options: ["Epigrama", "Oda", "Canción"],
+                correct: "Epigrama",
+                hintCorrect: "¡Buena tiradera! El epigrama es breve, mordaz, e ideal para dar un golpe de ingenio o sátira.",
+                hintWrong: "Califica como Epigrama: un verso muy corto diseñado para lanzar una crítica ingeniosa o sarcástica."
+            },
+            {
+                songTitle: "Elixir Bendito",
+                artist: "Café Crew",
+                albumCover: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Oh bendito café de la mañana,<br>elixir sagrado que mi fuego inflama.”",
+                options: ["Oda", "Elegía", "Caligrama"],
+                correct: "Oda",
+                hintCorrect: "¡Exacto! La oda se dedica a alabar, exaltar y tributar objetos, personas o pasiones.",
+                hintWrong: "Se trata de una Oda: su objetivo es celebrar y rendir homenaje a algo con entusiasmo."
+            },
+            {
+                songTitle: "Formas de Amor",
+                artist: "Lírica Visual",
+                albumCover: "https://images.unsplash.com/photo-1499415331640-8e628cdc195b?auto=format&fit=crop&w=400&q=80",
+                lyrics: "<span class='caligram-shape'>VERSOS QUE<br>DIBUJAN UN<br>CORAZÓN</span>",
+                options: ["Caligrama", "Soneto", "Canción"],
+                correct: "Caligrama",
+                hintCorrect: "¡Súper visual! El caligrama fusiona el texto con el dibujo formando una figura representativa.",
+                hintWrong: "Es un Caligrama: la disposición del texto forma una figura o imagen visual acorde al tema."
+            }
+        ];
+
+        // State Variables
+        let currentQuestion = 0;
+        let score = 0;
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        // Web Audio API Retro Sound Effects Engine
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            initAudio();
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                // Happy Chiptune Arpeggio
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                osc.frequency.setValueAtTime(1046.50, now + 0.24); // C6
+                
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else if (type === 'wrong') {
+                // Low error buzz
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.setValueAtTime(130, now + 0.12);
+                
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'click') {
+                // Soft UI Click
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            }
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high';
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-red-400';
+            }
+        }
+
+        // Navigation Functions
+        function startGame() {
+            playSound('click');
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-end').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const data = quizData[currentQuestion];
+
+            // Update UI elements
+            document.getElementById('track-number').innerText = `PISTA ${currentQuestion + 1} DE ${quizData.length}`;
+            document.getElementById('score-display').innerText = `${score} PTS`;
+            document.getElementById('progress-bar').style.width = `${((currentQuestion + 1) / quizData.length) * 100}%`;
+            
+            document.getElementById('song-title').innerText = data.songTitle;
+            document.getElementById('song-artist').innerText = data.artist;
+            document.getElementById('lyrics-text').innerHTML = data.lyrics;
+            
+            document.getElementById('album-thumb').style.backgroundImage = `url('${data.albumCover}')`;
+            document.getElementById('bg-cover').style.backgroundImage = `url('${data.albumCover}')`;
+
+            // Render option buttons
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            data.options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = "pixel-btn w-full py-3 px-4 bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 rounded-xl text-left font-bold text-xs text-white flex justify-between items-center transition-all";
+                btn.innerHTML = `
+                    <span>${option}</span>
+                    <i class="fa-solid fa-circle-play text-slate-500 text-sm"></i>
+                `;
+                btn.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const data = quizData[currentQuestion];
+            const modal = document.getElementById('feedback-modal');
+            const modalIconBg = document.getElementById('modal-icon-bg');
+            const modalIcon = document.getElementById('modal-icon');
+            const modalTitle = document.getElementById('modal-title');
+            const modalSubtitle = document.getElementById('modal-subtitle');
+            const modalExp = document.getElementById('modal-explanation');
+
+            if (selectedOption === data.correct) {
+                playSound('correct');
+                score += 100;
+                modalIconBg.className = "w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
+                modalIcon.className = "fa-solid fa-circle-check";
+                modalTitle.innerText = "¡Atinaste al Beat!";
+                modalSubtitle.innerText = `Subgénero: ${data.correct}`;
+                modalSubtitle.className = "text-xs text-emerald-400 font-bold uppercase tracking-wider mb-3";
+                modalExp.innerText = data.hintCorrect;
+            } else {
+                playSound('wrong');
+                modalIconBg.className = "w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-xl bg-amber-500/20 text-amber-400 border border-amber-500/40";
+                modalIcon.className = "fa-solid fa-triangle-exclamation";
+                modalTitle.innerText = "¡Casi lo Tienes!";
+                modalSubtitle.innerText = `Era más cercano a: ${data.correct}`;
+                modalSubtitle.className = "text-xs text-amber-400 font-bold uppercase tracking-wider mb-3";
+                modalExp.innerText = data.hintWrong;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            document.getElementById('feedback-modal').classList.add('hidden');
+            currentQuestion++;
+
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showEndScreen();
+            }
+        }
+
+        function showEndScreen() {
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-end').classList.remove('hidden');
+
+            document.getElementById('final-score').innerText = `${score} / ${quizData.length * 100}`;
+
+            let rank = "Oyente Casual";
+            if (score === 500) rank = "🔥 Maestro del Beat Lírico (100%)";
+            else if (score >= 300) rank = "🎧 Crítico Lirical";
+            else rank = "📻 Melómano en Entrenamiento";
+
+            document.getElementById('player-rank').innerText = rank;
+        }
+    </script>
+</body>
+</html>
