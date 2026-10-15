@@ -93,7 +93,7 @@
         <div class="relative z-10 pt-6 px-6 pb-2 flex justify-between items-center text-xs tracking-wider uppercase text-slate-300 font-semibold">
             <div class="flex items-center space-x-2">
                 <i class="fa-solid fa-compact-disc text-emerald-400 animate-spin" style="animation-duration: 6s;"></i>
-                <span>LYRICS QUIZ v1.0</span>
+                <span>LYRICS QUIZ v2.0</span>
             </div>
             <!-- Sound Toggle Button -->
             <button id="sound-toggle-btn" onclick="toggleAudio()" class="w-8 h-8 rounded-full bg-slate-800/80 border border-slate-700 flex items-center justify-center hover:text-emerald-400 transition-colors">
@@ -114,7 +114,7 @@
                         ¿QUÉ VIBRA TIENE ESTA <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">ROLA?</span>
                     </h1>
                     <p class="text-xs text-slate-300 mt-2 px-4 leading-relaxed">
-                        Escucha la letra imaginaria y adivina el género literario oculto en el ritmo.
+                        Escucha la letra aleatoria y adivina el subgénero oculto en el ritmo.
                     </p>
                 </div>
 
@@ -140,7 +140,7 @@
                                 <div class="w-2 bg-purple-400 rounded-t eq-bar"></div>
                                 <div class="w-2 bg-pink-400 rounded-t eq-bar"></div>
                             </div>
-                            <span class="pixel-font text-[9px] text-emerald-400 tracking-wider">SIDE A: LÍRICA</span>
+                            <span class="pixel-font text-[9px] text-emerald-400 tracking-wider">SIDE A: MIXED</span>
                         </div>
                     </div>
                 </div>
@@ -247,7 +247,7 @@
 
                 <div class="space-y-2">
                     <button onclick="startGame()" class="pixel-btn w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl">
-                        <i class="fa-solid fa-rotate-right mr-1"></i> Jugar de Nuevo
+                        <i class="fa-solid fa-rotate-right mr-1"></i> Jugar de Nuevo (Aleatorio)
                     </button>
                 </div>
             </div>
@@ -277,65 +277,171 @@
     </div>
 
     <script>
-        // Data Questions Bank for Lyrical Subgenres
-        const quizData = [
+        // Database Pool: 16 total examples (2 per subgenre across 8 lyrical subgenres)
+        const quizDataPool = [
+            // Oda
             {
-                songTitle: "Cuerdas Vacías",
-                artist: "MC Lágrima",
-                albumCover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80",
-                lyrics: "“Lloran las cuerdas por tu partida,<br>la cancha está vacía y mi alma hundida.”",
-                options: ["Elegía", "Oda", "Epigrama"],
-                correct: "Elegía",
-                hintCorrect: "¡Atinaste! La elegía expresa dolor profundo, luto o la pérdida trágica de algo o alguien amado.",
-                hintWrong: "Esta rola vibra más como Elegía: su esencia es lamentar una pérdida o despedida con melancolía."
-            },
-            {
-                songTitle: "Gotas de Instante",
-                artist: "Zen Flow",
-                albumCover: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=400&q=80",
-                lyrics: "“Un rayo de sol<br>sobre el agua congelada<br>cae la tarde.”",
-                options: ["Haiku", "Soneto", "Égloga"],
-                correct: "Haiku",
-                hintCorrect: "¡Al punto! El haiku captura un instante fugaz de la naturaleza en muy pocas palabras.",
-                hintWrong: "Es un Haiku: busca congelar un momento breve de la naturaleza de forma contemplativa."
-            },
-            {
-                songTitle: "Crown Diss Track",
-                artist: "Rima Afilada",
-                albumCover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=400&q=80",
-                lyrics: "“Tanto alardeas de tu corona brillante,<br>pero tu rima es hueca y principiante.”",
-                options: ["Epigrama", "Oda", "Canción"],
-                correct: "Epigrama",
-                hintCorrect: "¡Buena tiradera! El epigrama es breve, mordaz, e ideal para dar un golpe de ingenio o sátira.",
-                hintWrong: "Califica como Epigrama: un verso muy corto diseñado para lanzar una crítica ingeniosa o sarcástica."
-            },
-            {
+                subgenre: "Oda",
                 songTitle: "Elixir Bendito",
                 artist: "Café Crew",
                 albumCover: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80",
                 lyrics: "“Oh bendito café de la mañana,<br>elixir sagrado que mi fuego inflama.”",
-                options: ["Oda", "Elegía", "Caligrama"],
-                correct: "Oda",
                 hintCorrect: "¡Exacto! La oda se dedica a alabar, exaltar y tributar objetos, personas o pasiones.",
                 hintWrong: "Se trata de una Oda: su objetivo es celebrar y rendir homenaje a algo con entusiasmo."
             },
             {
+                subgenre: "Oda",
+                songTitle: "Canto al Esférico",
+                artist: "Gol en Contra",
+                albumCover: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Alabado sea el balón que rueda,<br>la red que abraza el gol que se queda.”",
+                hintCorrect: "¡Exacto! La oda exalta y rinde tributo con entusiasmo a objetos o pasiones.",
+                hintWrong: "Es una Oda: rinde homenaje entusiasta a un elemento clave de nuestra pasión."
+            },
+            // Elegía
+            {
+                subgenre: "Elegía",
+                songTitle: "Cuerdas Vacías",
+                artist: "MC Lágrima",
+                albumCover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Lloran las cuerdas por tu partida,<br>la cancha está vacía y mi alma hundida.”",
+                hintCorrect: "¡Atinaste! La elegía expresa dolor profundo, luto o la pérdida trágica de algo o alguien amado.",
+                hintWrong: "Esta rola vibra más como Elegía: su esencia es lamentar una pérdida o despedida con melancolía."
+            },
+            {
+                subgenre: "Elegía",
+                songTitle: "Adiós al Verano",
+                artist: "Sombra Lofi",
+                albumCover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Se fue la tarde y con ella tu voz,<br>quedando solo este vacío feroz.”",
+                hintCorrect: "¡Atinaste! La elegía canaliza la tristeza, el duelo y el lamento por una ausencia.",
+                hintWrong: "Corresponde a una Elegía: su propósito es expresar lamento y melancolía por lo perdido."
+            },
+            // Égloga
+            {
+                subgenre: "Égloga",
+                songTitle: "Pastoral Urbana",
+                artist: "Eco Rústico",
+                albumCover: "https://images.unsplash.com/photo-1470246973918-29a93221c455?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Bajo la sombra del viejo olivo,<br>cantan los pastores al sol esquivo.”",
+                hintCorrect: "¡Bien visto! La égloga idealiza la vida campestre y los amores de pastores en la naturaleza.",
+                hintWrong: "Es una Égloga: evoca escenarios pastoriles y la tranquilidad idealizada del campo."
+            },
+            {
+                subgenre: "Égloga",
+                songTitle: "Pradera de Amor",
+                artist: "Valle Sessions",
+                albumCover: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“El verde prado guarda tu huella,<br>pastor amado bajo la estrella.”",
+                hintCorrect: "¡Correcto! La égloga ambienta el amor y el diálogo en un entorno bucólico y campestre.",
+                hintWrong: "Es una Égloga: su sello es el ambiente pastoril y armónico de la naturaleza."
+            },
+            // Canción
+            {
+                subgenre: "Canción",
+                songTitle: "Ritmo de Barrio",
+                artist: "Calle Flow",
+                albumCover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Bajo la luna cantando voy,<br>buscando el ritmo de donde soy.”",
+                hintCorrect: "¡Así es! La canción lírica combina el sentimiento fluido y musicalidad emotiva universal.",
+                hintWrong: "Es una Canción: busca la musicalidad fluida y la expresión directa del sentimiento."
+            },
+            {
+                subgenre: "Canción",
+                songTitle: "Eco Sonoro",
+                artist: "Voz Abierta",
+                albumCover: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Suenan las palmas al compás del viento,<br>mi melodía es este sentimiento.”",
+                hintCorrect: "¡Correcto! La canción se centra en el cauce melódico y la emotividad rítmica.",
+                hintWrong: "Es una Canción: destaca por su tono melódico y su cercanía al canto tradicional."
+            },
+            // Soneto
+            {
+                subgenre: "Soneto",
+                songTitle: "Estructura Fija",
+                artist: "Clásico Moderno",
+                albumCover: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Catorce líneas guardan esta pasión,<br>dos cuartetos firmes y tercetos de amor.”",
+                hintCorrect: "¡Preciso! El soneto cumple con su estructura estricta de dos cuartetos y dos tercetos.",
+                hintWrong: "Se trata de un Soneto: destaca por su rigurosa arquitectura de 14 versos medidos."
+            },
+            {
+                subgenre: "Soneto",
+                songTitle: "Pasos Medidos",
+                artist: "Metro Rhymes",
+                albumCover: "https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“En este papel detengo el tiempo entero,<br>con catorce pasos que van hacia ti.”",
+                hintCorrect: "¡Exacto! El soneto equilibra su simetría matemática en 14 versos.",
+                hintWrong: "Es un Soneto: su sello principal es la medida estricta de 14 versos divididos en estrofas fijas."
+            },
+            // Epigrama
+            {
+                subgenre: "Epigrama",
+                songTitle: "Crown Diss Track",
+                artist: "Rima Afilada",
+                albumCover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Tanto alardeas de tu corona brillante,<br>pero tu rima es hueca y principiante.”",
+                hintCorrect: "¡Buena tiradera! El epigrama es breve, mordaz, e ideal para dar un golpe de ingenio o sátira.",
+                hintWrong: "Califica como Epigrama: un verso muy corto diseñado para lanzar una crítica ingeniosa o sarcástica."
+            },
+            {
+                subgenre: "Epigrama",
+                songTitle: "Breve y Mordaz",
+                artist: "Sátira King",
+                albumCover: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Dices que escribes con gran sabiduría,<br>pero tu ingenio cabe en un día.”",
+                hintCorrect: "¡Correcto! El epigrama destaca por su brevedad incisiva, agudeza y toque de burla inteligente.",
+                hintWrong: "Es un Epigrama: busca dejar una frase corta, mordaz e ingeniosa."
+            },
+            // Caligrama
+            {
+                subgenre: "Caligrama",
                 songTitle: "Formas de Amor",
                 artist: "Lírica Visual",
                 albumCover: "https://images.unsplash.com/photo-1499415331640-8e628cdc195b?auto=format&fit=crop&w=400&q=80",
                 lyrics: "<span class='caligram-shape'>VERSOS QUE<br>DIBUJAN UN<br>CORAZÓN</span>",
-                options: ["Caligrama", "Soneto", "Canción"],
-                correct: "Caligrama",
                 hintCorrect: "¡Súper visual! El caligrama fusiona el texto con el dibujo formando una figura representativa.",
                 hintWrong: "Es un Caligrama: la disposición del texto forma una figura o imagen visual acorde al tema."
+            },
+            {
+                subgenre: "Caligrama",
+                songTitle: "Lluvia de Tinta",
+                artist: "Canvas Flow",
+                albumCover: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80",
+                lyrics: "<span class='caligram-shape'>LLUVIA QUE<br>CAE EN LÍNEAS</span>",
+                hintCorrect: "<div>¡Muy visual! El caligrama ordena la tipografía para que el texto sea una ilustración gráfica.</div>",
+                hintWrong: "Se trata de un Caligrama: dibuja con palabras aquello que describe."
+            },
+            // Haiku
+            {
+                subgenre: "Haiku",
+                songTitle: "Gotas de Instante",
+                artist: "Zen Flow",
+                albumCover: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Un rayo de sol<br>sobre el agua congelada<br>cae la tarde.”",
+                hintCorrect: "¡Al punto! El haiku captura un instante fugaz de la naturaleza en muy pocas palabras.",
+                hintWrong: "Es un Haiku: busca congelar un momento breve de la naturaleza de forma contemplativa."
+            },
+            {
+                subgenre: "Haiku",
+                songTitle: "Viento Verde",
+                artist: "Bambú Beats",
+                albumCover: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=400&q=80",
+                lyrics: "“Hoja que cae<br>danza el viento de otoño<br>silencio verde.”",
+                hintCorrect: "¡Correcto! El haiku sintetiza la esencia natural en tres líneas breves de profunda contemplación.",
+                hintWrong: "Es un Haiku: estructura minimalista de tres líneas enfocada en la naturaleza."
             }
         ];
 
         // State Variables
+        let activeQuestions = [];
         let currentQuestion = 0;
         let score = 0;
         let soundEnabled = true;
         let audioCtx = null;
+        let currentCorrectAnswer = "";
+        let currentHintCorrect = "";
+        let currentHintWrong = "";
 
         // Web Audio API Retro Sound Effects Engine
         function initAudio() {
@@ -403,11 +509,16 @@
             }
         }
 
-        // Navigation Functions
+        // Navigation Functions & Random 5-question Session Generation
         function startGame() {
             playSound('click');
             currentQuestion = 0;
             score = 0;
+
+            // Shuffle the 16-item pool and pick 5 random questions for this session
+            const shuffledPool = [...quizDataPool].sort(() => Math.random() - 0.5);
+            activeQuestions = shuffledPool.slice(0, 5);
+
             document.getElementById('screen-welcome').classList.add('hidden');
             document.getElementById('screen-end').classList.add('hidden');
             document.getElementById('screen-game').classList.remove('hidden');
@@ -415,12 +526,15 @@
         }
 
         function loadQuestion() {
-            const data = quizData[currentQuestion];
+            const data = activeQuestions[currentQuestion];
+            currentCorrectAnswer = data.subgenre;
+            currentHintCorrect = data.hintCorrect;
+            currentHintWrong = data.hintWrong;
 
             // Update UI elements
-            document.getElementById('track-number').innerText = `PISTA ${currentQuestion + 1} DE ${quizData.length}`;
+            document.getElementById('track-number').innerText = `PISTA ${currentQuestion + 1} DE ${activeQuestions.length}`;
             document.getElementById('score-display').innerText = `${score} PTS`;
-            document.getElementById('progress-bar').style.width = `${((currentQuestion + 1) / quizData.length) * 100}%`;
+            document.getElementById('progress-bar').style.width = `${((currentQuestion + 1) / activeQuestions.length) * 100}%`;
             
             document.getElementById('song-title').innerText = data.songTitle;
             document.getElementById('song-artist').innerText = data.artist;
@@ -429,11 +543,19 @@
             document.getElementById('album-thumb').style.backgroundImage = `url('${data.albumCover}')`;
             document.getElementById('bg-cover').style.backgroundImage = `url('${data.albumCover}')`;
 
+            // Randomize Options: 1 correct + 2 random distractors from other subgenres, then shuffle button positions
+            const allSubgenres = [...new Set(quizDataPool.map(item => item.subgenre))];
+            const distractorPool = allSubgenres.filter(sg => sg !== data.subgenre);
+            const shuffledDistractors = distractorPool.sort(() => Math.random() - 0.5).slice(0, 2);
+            
+            // Combine and shuffle options array randomly so correct is never fixed in position 0
+            const options = [data.subgenre, ...shuffledDistractors].sort(() => Math.random() - 0.5);
+
             // Render option buttons
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
 
-            data.options.forEach(option => {
+            options.forEach(option => {
                 const btn = document.createElement('button');
                 btn.className = "pixel-btn w-full py-3 px-4 bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 rounded-xl text-left font-bold text-xs text-white flex justify-between items-center transition-all";
                 btn.innerHTML = `
@@ -446,7 +568,6 @@
         }
 
         function checkAnswer(selectedOption) {
-            const data = quizData[currentQuestion];
             const modal = document.getElementById('feedback-modal');
             const modalIconBg = document.getElementById('modal-icon-bg');
             const modalIcon = document.getElementById('modal-icon');
@@ -454,23 +575,23 @@
             const modalSubtitle = document.getElementById('modal-subtitle');
             const modalExp = document.getElementById('modal-explanation');
 
-            if (selectedOption === data.correct) {
+            if (selectedOption === currentCorrectAnswer) {
                 playSound('correct');
                 score += 100;
                 modalIconBg.className = "w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
                 modalIcon.className = "fa-solid fa-circle-check";
                 modalTitle.innerText = "¡Atinaste al Beat!";
-                modalSubtitle.innerText = `Subgénero: ${data.correct}`;
+                modalSubtitle.innerText = `Subgénero: ${currentCorrectAnswer}`;
                 modalSubtitle.className = "text-xs text-emerald-400 font-bold uppercase tracking-wider mb-3";
-                modalExp.innerText = data.hintCorrect;
+                modalExp.innerText = currentHintCorrect;
             } else {
                 playSound('wrong');
                 modalIconBg.className = "w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-xl bg-amber-500/20 text-amber-400 border border-amber-500/40";
                 modalIcon.className = "fa-solid fa-triangle-exclamation";
                 modalTitle.innerText = "¡Casi lo Tienes!";
-                modalSubtitle.innerText = `Era más cercano a: ${data.correct}`;
+                modalSubtitle.innerText = `Era más cercano a: ${currentCorrectAnswer}`;
                 modalSubtitle.className = "text-xs text-amber-400 font-bold uppercase tracking-wider mb-3";
-                modalExp.innerText = data.hintWrong;
+                modalExp.innerText = currentHintWrong;
             }
 
             modal.classList.remove('hidden');
@@ -481,7 +602,7 @@
             document.getElementById('feedback-modal').classList.add('hidden');
             currentQuestion++;
 
-            if (currentQuestion < quizData.length) {
+            if (currentQuestion < activeQuestions.length) {
                 loadQuestion();
             } else {
                 showEndScreen();
@@ -492,7 +613,7 @@
             document.getElementById('screen-game').classList.add('hidden');
             document.getElementById('screen-end').classList.remove('hidden');
 
-            document.getElementById('final-score').innerText = `${score} / ${quizData.length * 100}`;
+            document.getElementById('final-score').innerText = `${score} / ${activeQuestions.length * 100}`;
 
             let rank = "Oyente Casual";
             if (score === 500) rank = "🔥 Maestro del Beat Lírico (100%)";
